@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Starry Night • Moon Picture Reveal</title>
+<title>Starry Night • Moon Image Zoom</title>
 
 <style>
   :root {
@@ -20,13 +20,38 @@
     height: 100vh;
     background: radial-gradient(circle at 50% 30%, var(--sky-1) 0%, #0d1f3d 50%, var(--sky-2) 100%);
     overflow: hidden;
-    font-family: Arial, sans-serif;
   }
 
   .scene {
     position: relative;
     width: 100%;
     height: 100%;
+  }
+
+  /* ✨ Story Text */
+  .story-text {
+    position: absolute;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.9);
+    font-size: 22px;
+    max-width: 760px;
+    text-align: center;
+    line-height: 1.6;
+    font-family: "Segoe UI", Arial, sans-serif;
+    letter-spacing: 0.5px;
+    text-shadow:
+      0 0 10px rgba(255,255,255,0.35),
+      0 0 25px rgba(180,210,255,0.25);
+    z-index: 5;
+    padding: 0 20px;
+    pointer-events: none;
+  }
+
+  .story-text span {
+    color: #ffffff;
+    font-weight: 600;
   }
 
   /* ⭐ Twinkling Stars */
@@ -50,9 +75,9 @@
     }
   }
 
-  /* 🌒 Small Sky Moon */
+  /* 🌒 Sky Moon - Click to Zoom */
   .sky-moon {
-    position: abso*ute;
+    position: absolute;
     right: 8%;
     top: 8%;
     width: 60px;
@@ -69,16 +94,6 @@
     transform: scale(1.1);
   }
 
-  .moon-hint {
-    position: absolute;
-    right: 5%;
-    top: calc(8% + 75px);
-    color: rgba(255,255,255,0.75);
-    font-size: 14px;
-    z-index: 10;
-    letter-spacing: 0.3px;
-  }
-
   /* ⛰️ Foreground Hill */
   .hill {
     position: absolute;
@@ -93,9 +108,9 @@
 
   /* 🔭 Silhouette Group */
   .silhouette-svg {
-    position* absolute;
+    position: absolute;
     bottom: 5vh;
-    le*t: 50%;
+    left: 50%;
     transform: translateX(-50%);
     width: 100%;
     max-width: 900px;
@@ -110,15 +125,15 @@
 
   /* 🔍 Fullscreen Zoom Overlay */
   .moon-reveal {
-    position: f*xed;
+    position: fixed;
     inset: 0;
-    background:*#050a14;
-    clip-path: circle(0px*at var(--zoom-origin-x) var(--zoom*origin-y));
-    transition: clip-p*th 1s cubic-bezier(0.25, 1, 0.5, 1*, opacity 0.3s ease;
-    z-index: *00;
+    background: #050a14;
+    clip-path: circle(0px at var(--zoom-origin-x) var(--zoom-origin-y));
+    transition: clip-path 1s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 100;
     display: flex;
-    align-i*ems: center;
-    justify-content: *enter;
+    align-items: center;
+    justify-content: center;
     pointer-events: none;
     opacity: 0;
   }
@@ -129,159 +144,152 @@
     pointer-events: auto;
   }
 
-  /* Container holding big moon and image */
-  .moon-content {
-    position:*relative;
+  /* 🌕 Big Moon With Image Inside */
+  .big-moon {
+    position: relative;
     width: 92vmin;
     height: 92vmin;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* 🌕 Big Moon */
-  .big-moon {
-    position: abso*ute;
-    width: 92vmin;
-    height* 92vmin;
     border-radius: 50%;
- *  background: radial-gradient(circ*e at 50% 50%, #f0f4f8 0%, #d1d9e6 *0%, #99a3b2 100%);
-    box-shadow:*      0 0 100px 20px rgba(255,255,*55,0.3),
-      inset -40px -40px 8*px rgba(0,0,0,0.4);
-    transform:*scale(0.1);
-    transition: transf*rm 1.5s cubic-bezier(0.25, 1, 0.5, 1);
-    z-index: 1;
+    overflow: hidden;
+    background: #d1d9e6;
+    box-shadow:
+      0 0 100px 20px rgba(255,255,255,0.3),
+      inset -40px -40px 80px rgba(0,0,0,0.4);
+    transform: scale(0.1);
+    transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   .zoomed .big-moon {
     transform: scale(1);
   }
 
-  /* 🖼️ Image shown when moon zooms */
-  .moon-photo {
-    position: ab*olute;
-    width* 52%;
-    height: 52%;
-   *object-fit: cover;
-    border-radi*s: 50%;
+  /* 🖼️ Image embedded inside moon */
+  .moon-inside-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+  }
+
+  /* Moon-like shine/shadow overlay */
+  .big-moon::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 35% 30%, rgba(255,255,255,0.25), transparent 35%),
+      radial-gradient(circle at 75% 75%, rgba(0,0,0,0.35), transparent 45%);
+    box-shadow: inset -40px -40px 80px rgba(0,0,0,0.35);
     z-index: 2;
-    opacit*: 0;
-    transform: scale(0.3);
-  **transition:
-      opacity 1s ease *.7s,
-      transform 1s ease 0.7s;*    box-shadow:
-     *0 0 35px rgba(255,255,255,0.55),
- *    0 0 80px rgba(255,255,255,0.2);
-    border: 4px solid rgba(255,255,255,0.75);
   }
 
-  .zoomed .moon-photo {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  /* Close button */
   .close-btn {
-    position: abs*lute;
+    position: absolute;
     top: 30px;
-    right: 30*x;
+    right: 30px;
     padding: 12px 24px;
-    bac*ground: rgba(255,255,255,0.1);
-   *border: 1px solid rgba(255,255,255*0.3);
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
     color: white;
-    cursor* pointer;
-    border-radius: 6px;
-*   z-index: 101;
-    font-size: 15*x;
-    backdrop-filter: blur(8px);*  }
+    cursor: pointer;
+    border-radius: 4px;
+    z-index: 101;
+    font-size: 14px;
+  }
 
   .close-btn:hover {
-    back*round: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.2);
   }
-*  @media (max-width: 600px) {
-    *sky-moon {
-      width: 48px;
-    * height: 48px;
-      right: 7%;
-  *   top: 7%;
+
+  /* 📱 Responsive text */
+  @media (max-width: 768px) {
+    .story-text {
+      top: 16%;
+      font-size: 16px;
+      max-width: 90%;
     }
 
-    .moon-hint *
-      font-size: 12px;
-      righ*: 4%;
-      top: calc(7% + 62px);
-*   }
+    .sky-moon {
+      right: 7%;
+      top: 6%;
+      width: 52px;
+      height: 52px;
+    }
 
     .close-btn {
-      top: *8px;
-      right: 18px;
-      padd*ng: 10px 18px;
-    }
-
-    .moon-ph*to {
-      width: 60%;
-      heigh*: 60%;
+      top: 20px;
+      right: 20px;
+      padding: 10px 18px;
     }
   }
 </style>
 </head>
-*<body>
 
-<div class="scene" id="sce*e">
-  <div id="star-field*></div>
+<body>
 
-  <div class="sky-moon" i*="skyMoon" title="Click to zoom"><*div>
-  <div class="moon-hint">Clic* the moon</div>
+<div class="scene" id="scene">
+  <div id="star-field"></div>
 
-  <svg class="sil*ouette-svg" viewBox="0 0 900 600">*    <g transform="translate(250, 5*0)">
-      <path class="shape" d="*-5,-320 L-65,0 L-45,0 L-2,-300 Z" *>
-      <path class="shape" d="M5,*320 L65,0 L45,0 L2,-300 Z" />
-    * <rect class="shape" x="-3" y="-32*" width="6" height="320" />
-      *path class="shape" d="M-15,-320 L1*,-320 L10,-340 L-10,-340 Z" />
-   *</g>
+  <div class="story-text">
+    It's a quiet, dark night… yet the moon glows brighter than ever tonight.
+Almost as if it’s hiding a beautiful secret.<br>
+    <span>Click on the moon to discover the reason.</span>
+  </div>
 
-    <g transform="translate(*50, 215) rotate(-15)">
-      <rect*class="shape" x="-140" y="-20" wid*h="280" height="40" rx="2" />
-    * <rect class="shape" x="140" y="-2*" width="45" height="50" rx="2" />*      <rect class="shape" x="-170"*y="-12" width="30" height="24" rx=*1" />
-      <rect class="shape" x=*-185" y="-8" width="15" height="16* rx="1" />
+  <div class="sky-moon" id="skyMoon"></div>
+
+  <svg class="silhouette-svg" viewBox="0 0 900 600">
+    <g transform="translate(250, 550)">
+      <path class="shape" d="M-5,-320 L-65,0 L-45,0 L-2,-300 Z" />
+      <path class="shape" d="M5,-320 L65,0 L45,0 L2,-300 Z" />
+      <rect class="shape" x="-3" y="-320" width="6" height="320" />
+      <path class="shape" d="M-15,-320 L15,-320 L10,-340 L-10,-340 Z" />
     </g>
 
-    <g transf*rm="translate(70, 550)">
-      <pa*h class="shape" d="M -25,0 L -15,-*00 L 15,-200 L 25,0 L 12,0 L 5,-14* L -5,-140 L -12,0 Z" />
-      <re*t class="shape" x="-20" y="-320" w*dth="45" height="130" rx="10" tran*form="rotate(-5, 5, -200)" />
-    * <circle class="shape" cx="10" cy=*-345" r="32" />
-      <path class=*shape" d="M 5,-300 Q 50,-270 70,-2*0 L 140,-305 L 155,-295 L 90,-250 * 40,-230 5,-270 Z" />
+    <g transform="translate(250, 215) rotate(-15)">
+      <rect class="shape" x="-140" y="-20" width="280" height="40" rx="2" />
+      <rect class="shape" x="140" y="-25" width="45" height="50" rx="2" />
+      <rect class="shape" x="-170" y="-12" width="30" height="24" rx="1" />
+      <rect class="shape" x="-185" y="-8" width="15" height="16" rx="1" />
     </g>
-  <*svg>
+
+    <g transform="translate(70, 550)">
+      <path class="shape" d="M -25,0 L -15,-200 L 15,-200 L 25,0 L 12,0 L 5,-140 L -5,-140 L -12,0 Z" />
+      <rect class="shape" x="-20" y="-320" width="45" height="130" rx="10" transform="rotate(-5, 5, -200)" />
+      <circle class="shape" cx="10" cy="-345" r="32" />
+      <path class="shape" d="M 5,-300 Q 50,-270 70,-280 L 140,-305 L 155,-295 L 90,-250 Q 40,-230 5,-270 Z" />
+    </g>
+  </svg>
 
   <div class="hill"></div>
-<*div>
+</div>
 
-<!-- Zoom Reveal -->
-<div cl*ss="moon-reveal" id="reveal">
-  <b*tton class="close-btn" id="closeBt*">Close</button>
+<div class="moon-reveal" id="reveal">
+  <button class="close-btn" id="closeBtn">Close</button>
 
-  <div class="mo*n-content">
-    <div class="big-mo*n"></div>
-
-    <!-- Your image fro* the same repo/folder -->
-    <img*src="Image.jpg" class="moon-photo"*alt="Moon reveal image">
+  <div class="big-moon">
+    <img src="moon-image.jpg" class="moon-inside-image" alt="Moon Image">
   </div>
-*/div>
+</div>
 
 <script>
-  // Generate rand*m stars
-  const field = document.g*tElementById('star-field');
+  // Generate random stars
+  const field = document.getElementById('star-field');
 
-  for*(let i = 0; i < 200; i++) {
-    co*st star = document.createElement('*iv');
-    star.className = 'star';*
-    const size = Math.random() * * + 1;
+  for (let i = 0; i < 200; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
 
-    star.style.width = size*+ 'px';
-    star.style.height = si*e + 'px';
-    star.style.left = Ma*h.random() * 100 + '%';
-    star.s*yle.top = Math.random() * 80 + '%'*) * 3 + 2) + 's');
+    const size = Math.random() * 2 + 1;
+
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 80 + '%';
+    star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
     star.style.animationDelay = Math.random() * 5 + 's';
 
     field.appendChild(star);
@@ -303,12 +311,6 @@
 
   closeBtn.addEventListener('click', () => {
     document.body.classList.remove('zoomed');
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      document.body.classList.remove('zoomed');
-    }
   });
 </script>
 
